@@ -21,6 +21,7 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     $scope.queryParams.company_id = $location.search().company_id;
     $scope.queryParams.project_id = $location.search().project_id;
     $scope.queryParams.subproject_id = $location.search().subproject_id;
+    $scope.from_ipm = $location.search().ipm;
 
     $scope.projectList = [{id:0, name:"全部"}];
     $scope.showProjectName = "全部";
@@ -116,7 +117,7 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     {
         $scope.changer_name = "全部";
         $http.get(requestProblem + "problemuser_list", {
-            params: {subproject_id: $scope.queryParams.subproject_id}
+            params: {company_id: $scope.queryParams.company_id}
         }).then(
             function (response) {
                 Array.prototype.push.apply($scope.problemChangerList, response.data.changer);
@@ -136,7 +137,7 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     {
         $scope.creator_name = "全部";
         $http.get(requestProblem + "problemuser_list", {
-            params: {subproject_id: $scope.queryParams.subproject_id}
+            params: {company_id: $scope.queryParams.company_id}
         }).then(
             function (response) {
                 Array.prototype.push.apply($scope.problemCreatorList, response.data.creator);
@@ -280,5 +281,16 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         }
        $scope.search();
     }
-
+    
+    $scope.showImg = function(img){
+        //调用arx函数
+        execAsync(JSON.stringify({
+            functionName: 'ShowImage',
+            functionParams: { args: {url:img}},
+            invokeAsCommand: false
+        }),
+        function(result){console.log(result)},
+        function(result){console.log(result)});
+    }
+    
 }]);

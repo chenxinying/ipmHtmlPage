@@ -299,9 +299,10 @@
                 <div class="col-xs-12"><p>{{detailUser.description}}</p></div>
               </div>
               <div class="row">
-                <div class="col-xs-12">图片详情：</div>
+								<div class="col-xs-12">图片详情：</div>
                 <div class="col-xs-12" style="padding-top: 10px;" ng-repeat="img in detailUser.file_list">
-                <img class="problem_image" ng-src="{{img}}">
+									<a ng-if="!from_ipm" ng-href="{{img}}" target="_blank" title="点击查看原图"><img class="problem_image" ng-src="{{img}}"></a>
+									<a ng-if="from_ipm" ng-href="{{img}}" ng-click="showImg(img)"><img class="problem_image" ng-src="{{img}}"></a>
                 </div>
                 <br>
               </div>

@@ -149,39 +149,37 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         $scope.detailIndex = index;
     }
 
-    //设置解决问题
+    //设置删除问题
     $scope.deleteData = {};
     $scope.setDeleteUser = function(index, user) {
         $scope.deleteData.index = index;
-        $scope.deleteData.openid = user.changer_id;
+        $scope.deleteData.openid = user.creator_id;
         $scope.deleteData.problemid = user.id;
         $scope.dataToggle = '';
     };
 
-    //解决问题
+    //删除问题
     $scope.delete = function() {
-        var obj = {openid: $scope.deleteData.openid, state: 3, problemid: $scope.deleteData.problemid};
-        $http.post(requestProblem + "Solveproblem", obj).success(
-            function(response) {
-                if(response.success)
-                {
-                    var state_str = ["全部", "待解决", "", "已解决"];
-                    $scope.users[$scope.deleteData.index].state = response.state;
-                    $scope.users[$scope.deleteData.index].update_time = response.update_time;
-                    $scope.users[$scope.deleteData.index].state_name = state_str[response.state];
+        var obj = {openid: $scope.deleteData.openid, problem_id: $scope.deleteData.problemid};
+        $http.get("/design_institute/public/admin/Problem/DelProblem", {
+            params: obj
+        }).then(
+            function (response) {
+                if(response.data.success){
                     $scope.alert.title = "操作成功";
-                }else
-                {
+                    $scope.users.splice($scope.deleteData.index, 1);
+                }else{
                     $scope.alert.title = "操作失败";
                 }
-                $scope.alert.content = response.message;
+                $scope.alert.content = response.data.message;
                 $('#alertModal').modal('show');
-            }).error(
-            function(e) {
+            },
+            function (response) {
                 $scope.alert.title = "操作失败";
-                $scope.alert.content = e.toString();
+                $scope.alert.content = response.toString();
                 $('#alertModal').modal('show');
-            });
+            }
+        );
     };
 
     //问题状态过滤
@@ -244,4 +242,16 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         }
        $scope.search();
     }
+
+    $scope.showImg = function(img){
+        //调用arx函数
+        execAsync(JSON.stringify({
+            functionName: 'ShowImage',
+            functionParams: { args: {url:img}},
+            invokeAsCommand: false
+        }),
+        function(result){console.log(result)},
+        function(result){console.log(result)});
+    }
+    
 }]);

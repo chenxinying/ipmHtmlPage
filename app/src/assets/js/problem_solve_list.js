@@ -244,4 +244,16 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         }
        $scope.search();
     }
+
+    $scope.showImg = function(img){
+        //调用arx函数
+        execAsync(JSON.stringify({
+            functionName: 'ShowImage',
+            functionParams: { args: {url:img}},
+            invokeAsCommand: false
+        }),
+        function(result){console.log(result)},
+        function(result){console.log(result)});
+    }
+    
 }]);

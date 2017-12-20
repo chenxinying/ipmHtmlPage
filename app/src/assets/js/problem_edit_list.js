@@ -13,6 +13,7 @@ app.config(['$locationProvider', function ($locationProvider) {
 app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
 
     $scope.queryParams =  angular.copy($location.search());
+    $scope.from_ipm = $location.search().ipm;
     
     if(!$scope.queryParams.company_id){
         alert("喂，你是哪个公司的？");
@@ -161,7 +162,7 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     //删除问题
     $scope.delete = function() {
         var obj = {openid: $scope.deleteData.openid, problem_id: $scope.deleteData.problemid};
-        $http.get("/design_institute/public/admin/Problem/DelProblem", {
+        $http.get(requestProblem + "deleteProblem", {
             params: obj
         }).then(
             function (response) {

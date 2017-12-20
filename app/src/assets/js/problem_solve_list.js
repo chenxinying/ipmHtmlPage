@@ -13,6 +13,7 @@ app.config(['$locationProvider', function ($locationProvider) {
 app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
 
     $scope.queryParams =  angular.copy($location.search());
+    $scope.from_ipm = $location.search().ipm;
     
     if(!$scope.queryParams.company_id){
         alert("喂，你是哪个公司的？");

@@ -54,7 +54,7 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         $scope.queryParams.count = $scope.count;
         $scope.queryParams.keyword = $scope.keyword;
 
-        $scope.queryParams.role_id = 2;//审核底图组提交的文件
+        //$scope.queryParams.role_id = 2;//审核底图组提交的文件
         
         $http.get(requestHost + "File/file_list", {
             params: $scope.queryParams

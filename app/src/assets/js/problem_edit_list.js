@@ -153,7 +153,8 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         delete params.keyword;
         var param = "";
         for (var key in params) {
-            param += key + "=" + params[key] + "&";
+            if(params[key] != undefined)
+                param += key + "=" + params[key] + "&";
         }
         if (param !="")
         {

@@ -71,16 +71,10 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     $scope.problemChangerList = [];
     $scope.changer_name = "全部";
     $http.get(requestProblem + "problemuser_list", {
-        params: {subproject_id: $scope.queryParams.subproject_id}
+        params: {company_id : $scope.queryParams.company_id, subproject_id: $scope.queryParams.subproject_id}
     }).then(
         function(response) {
             Array.prototype.push.apply($scope.problemChangerList, response.data.changer);
-            for(var i = 0; i < response.data.creator.length; ++i){
-                if(response.data.creator[i].creator_id == $scope.queryParams.creator_id){
-                    $scope.showCreatorName = response.data.creator[i].creator_nickname;
-                    return;
-                }
-            }
         },
         function(response){
             console.log(response);
@@ -88,6 +82,17 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     );
 
     //获取审核人的名称
+    $http.get("/design_institute/public/admin/user/selectUser", {
+        params: {openid: $scope.queryParams.creator_id}
+    }).then(
+        function(response) {
+            $scope.showCreatorName = response.data.nickname;
+        },
+        function(response){
+            console.log(response);
+        }
+    );
+
 
     //负责人过滤
     $scope.showChanger = function(s){
@@ -141,6 +146,29 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         dereg = $scope.$watch('start', append);
     }
 
+    $scope.exportExcel = function() {
+        var params =  angular.copy($scope.queryParams);
+        delete params.start;
+        delete params.count;
+        delete params.keyword;
+        var param = "";
+        for (var key in params) {
+            param += key + "=" + params[key] + "&";
+        }
+        if (param !="")
+        {
+            param = "?" + param;
+            param = param.substring(0,param.length-1)
+        }
+        execAsync(JSON.stringify({
+            functionName: 'ExpoerExcel',
+            functionParams: { args: {url:"http://120.25.74.178" + requestProblem + "ProblemInfo_list" + param}},
+            invokeAsCommand: false
+        }),
+        function(result){console.log(result)},
+        function(result){console.log(result)});
+    }
+
     //详细信息
     $scope.detailUser = {};
     $scope.detailIndex;
@@ -184,7 +212,7 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     };
 
     //问题状态过滤
-    var state_str = ["全部", "待解决", "", "已解决"];
+    var state_str = ["全部", "待解决", "待审核", "已解决"];
     $scope.selectedState = "全部";
 
     $scope.showProblemState = function(s) {
@@ -254,5 +282,46 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         function(result){console.log(result)},
         function(result){console.log(result)});
     }
-    
+
+    $scope.auditFile = {};
+    $scope.setAuditFile = function(index,file){
+        $scope.auditFile.index = index;
+        $scope.auditFile.id = file.id;
+        $scope.auditFile.openid = file.changer_id;
+        $scope.dataToggle = '';
+    }
+
+    //通过问题
+    $scope.doPassFile = function(){
+        auditFile(3);
+    }
+
+    //打回问题
+    $scope.doBackFile = function(){
+        auditFile(1);
+    }
+
+    function auditFile(state){
+        var obj = {openid: $scope.auditFile.openid, state: state, problemid:  $scope.auditFile.id};
+        $http.post(requestProblem + "Solveproblem", obj).then(
+            function(response) {
+                if(response.data.success){
+                    $scope.alert.title = "操作成功";
+                    $scope.users[$scope.auditFile.index].state = state;
+                    $scope.users[$scope.auditFile.index].update_time = response.data.update_time;
+                    $scope.users[$scope.auditFile.index].state_name = state_str[response.data.state];
+                }else{
+                    $scope.alert.title = "操作失败";
+                }
+                $scope.alert.content = response.data.message;
+                $('#alertModal').modal('show');
+            },
+            function(e) {
+                $scope.alert.title = "操作失败";
+                $scope.alert.content = e.toString();
+                $('#alertModal').modal('show');
+            }
+        );
+    }
+
 }]);

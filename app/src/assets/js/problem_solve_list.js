@@ -71,16 +71,22 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     $scope.problemCreatorList = [];
     $scope.creator_name = "全部";
     $http.get(requestProblem + "problemuser_list", {
-        params: {subproject_id: $scope.queryParams.subproject_id}
+        params: {company_id : $scope.queryParams.company_id, subproject_id: $scope.queryParams.subproject_id}
     }).then(
         function(response) {
             Array.prototype.push.apply($scope.problemCreatorList, response.data.creator);
-            for(var i = 0; i < response.data.changer.length; ++i){
-                if(response.data.changer[i].changer_id == $scope.queryParams.changer_id){
-                    $scope.showChangerName = response.data.changer[i].changer_nickname;
-                    return;
-                }
-            }
+        },
+        function(response){
+            console.log(response);
+        }
+    );
+
+    //获取负责人的名称
+    $http.get("/design_institute/public/admin/user/selectUser", {
+        params: {openid: $scope.queryParams.changer_id}
+    }).then(
+        function(response) {
+            $scope.showChangerName = response.data.nickname;
         },
         function(response){
             console.log(response);
@@ -140,6 +146,29 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         dereg = $scope.$watch('start', append);
     }
 
+   $scope.exportExcel = function() {
+        var params =  angular.copy($scope.queryParams);
+        delete params.start;
+        delete params.count;
+        delete params.keyword;
+        var param = "";
+        for (var key in params) {
+            param += key + "=" + params[key] + "&";
+        }
+        if (param !="")
+        {
+            param = "?" + param;
+            param = param.substring(0,param.length-1)
+        }
+        execAsync(JSON.stringify({
+            functionName: 'ExpoerExcel',
+            functionParams: { args: {url:"http://120.25.74.178" + requestProblem + "ProblemInfo_list" + param}},
+            invokeAsCommand: false
+        }),
+        function(result){console.log(result)},
+        function(result){console.log(result)});
+    }
+
     //详细信息
     $scope.detailUser = {};
     $scope.detailIndex;
@@ -160,12 +189,12 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
 
     //解决问题
     $scope.delete = function() {
-        var obj = {openid: $scope.deleteData.openid, state: 3, problemid: $scope.deleteData.problemid};
+        var obj = {openid: $scope.deleteData.openid, state: 2, problemid: $scope.deleteData.problemid};
         $http.post(requestProblem + "Solveproblem", obj).then(
             function(response) {
                 if(response.data.success)
                 {
-                    var state_str = ["全部", "待解决", "", "已解决"];
+                    var state_str = ["全部", "待解决", "待审核", "已解决"];
                     $scope.users[$scope.deleteData.index].state = response.data.state;
                     $scope.users[$scope.deleteData.index].update_time = response.data.update_time;
                     $scope.users[$scope.deleteData.index].state_name = state_str[response.data.state];
@@ -186,7 +215,7 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     };
 
     //问题状态过滤
-    var state_str = ["全部", "待解决", "", "已解决"];
+    var state_str = ["全部", "待解决", "待审核", "已解决"];
     $scope.selectedState = "全部";
 
     $scope.showProblemState = function(s) {

@@ -212,6 +212,29 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         dereg = $scope.$watch('start', append);
     }
 
+    $scope.exportExcel = function() {
+        var params =  angular.copy($scope.queryParams);
+        delete params.start;
+        delete params.count;
+        delete params.keyword;
+        var param = "";
+        for (var key in params) {
+            param += key + "=" + params[key] + "&";
+        }
+        if (param !="")
+        {
+            param = "?" + param;
+            param = param.substring(0,param.length-1)
+        }
+        execAsync(JSON.stringify({
+            functionName: 'ExpoerExcel',
+            functionParams: { args: {url:"http://120.25.74.178" + requestProblem + "ProblemInfo_list" + param}},
+            invokeAsCommand: false
+        }),
+        function(result){console.log(result)},
+        function(result){console.log(result)});
+    }
+    
     //详细信息
     $scope.detailUser = {};
     $scope.detailIndex;
@@ -222,7 +245,7 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     }
 
     //问题状态过滤
-    var state_str = ["全部", "待解决", "", "已解决"];
+    var state_str = ["全部", "待解决", "待审核", "已解决"];
     $scope.selectedState = "全部";
 
     $scope.showProblemState = function(s) {

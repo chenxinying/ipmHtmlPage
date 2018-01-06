@@ -65,6 +65,7 @@
               <input type="text" class="form-control" placeholder="输入搜索..." ng-model="keyword">
               <span class="input-group-btn">
               <button class="btn btn-default" type="submit" ng-click="search()">搜索</button>
+              <button ng-if="from_ipm" class="btn btn-default" type="submit" ng-click="exportExcel()">导出EXCEL</button>
             </span>
             </div>
           </form>
@@ -193,7 +194,7 @@
 								</tr>
 							</thead>
 		
-							<tr ng-class="{1:'danger', 2:'waring', 3:'success'}[user.state]" ng-repeat="user in users" ng-click="setDetailUser($index, user)" data-toggle="{{dataToggle}}" href="#detailModal" style="cursor: pointer;">
+							<tr ng-class="{1:'danger', 2:'warning', 3:'success'}[user.state]" ng-repeat="user in users" ng-click="setDetailUser($index, user)" data-toggle="{{dataToggle}}" href="#detailModal" style="cursor: pointer;">
 								<td>
 										<b>{{user.title}}</b>
 								</td>

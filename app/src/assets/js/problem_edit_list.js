@@ -295,11 +295,13 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     //通过问题
     $scope.doPassFile = function(){
         auditFile(3);
+        $scope.dataToggle = 'modal';
     }
 
     //打回问题
     $scope.doBackFile = function(){
         auditFile(1);
+        $scope.dataToggle = 'modal';
     }
 
     function auditFile(state){

@@ -174,13 +174,25 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     $scope.detailUser = {};
     $scope.detailIndex;
 
+    $scope.newState = '';
+    $scope.newTypeId = 0;
+    $scope.newGrade = '';
+    $scope.newArea = 0;
+    $scope.newDescription = '';
+
     $scope.setDetailUser = function(index, user) {
         $scope.detailUser = angular.copy(user);
         $scope.detailIndex = index;
+        $scope.newState = $scope.detailUser.prjState;
+        $scope.newTypeId = $scope.detailUser.subtype_id;
+        $scope.newGrade = $scope.detailUser.problemGrade;
+        $scope.newArea =  $scope.detailUser.errorArea;
+        $scope.newDescription = $scope.detailUser.description;
     }
 
     //设置删除问题
     $scope.deleteData = {};
+
     $scope.setDeleteUser = function(index, user) {
         $scope.deleteData.index = index;
         $scope.deleteData.openid = user.creator_id;
@@ -244,7 +256,7 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
     }
 
     //问题部位过滤
-    $scope.subtype_str = ["全部", "楼板", "梁板", "墙板", "飘台", "楼梯", "背楞", "其他"];
+    $scope.subtype_str = ["全部", "楼板", "梁板", "墙板", "吊模", "楼梯", "背楞", "其他"];
     $scope.selectedSubtype = "全部";
 
     $scope.showProblemType = function(s){
@@ -327,4 +339,80 @@ app.controller('userCtrl', ['$scope', '$http', '$location', function($scope, $ht
         );
     }
 
+    //问题阶段
+    $scope.detailSelectState = function(index){
+        $scope.newState = index;
+    }
+
+    //问题部位
+    $scope.detailSelectType = function(index){
+        $scope.newTypeId = index;
+    }
+
+    //问题等级
+    $scope.detailSelectGrade = function(index){
+        $scope.newGrade = $scope.problemGrade_str[index];
+    }
+
+    //执行修改
+    $scope.updateObj = {};
+
+    $scope.update = function() {
+        
+        $scope.updateObj = {problem_id: $scope.detailUser.id};
+        
+        if($scope.newState != $scope.detailUser.prjState)
+            $scope.updateObj.prjState = $scope.newState;
+        
+        if($scope.newTypeId != $scope.detailUser.subtype_id)
+            $scope.updateObj.subtype_id = $scope.newTypeId;
+
+        if($scope.newGrade != $scope.detailUser.problemGrade)
+            $scope.updateObj.problemGrade = $scope.newGrade;
+
+        if($scope.newArea != $scope.detailUser.errorArea)
+            $scope.updateObj.errorArea = $scope.newArea;
+        
+        if($scope.newDescription != $scope.detailUser.description)
+            $scope.updateObj.description = $scope.newDescription;
+
+        $http.post("/design_institute/public/admin/Problem/EditProblem", $scope.updateObj).then(
+            
+            function(response) {
+                if(response.data.success){
+                    $scope.alert.title = "操作成功";
+                    
+                    if($scope.newState != $scope.detailUser.prjState)
+                        $scope.users[$scope.detailIndex].prjState = $scope.newState;
+
+                    if($scope.newTypeId != $scope.detailUser.subtype_id)
+                    {
+                        $scope.users[$scope.detailIndex].subtype_id = $scope.newTypeId;
+                        $scope.users[$scope.detailIndex].subtype_name = $scope.subtype_str[$scope.users[$scope.detailIndex].subtype_id];
+                    }
+                    
+                    if($scope.newGrade != $scope.detailUser.problemGrade)
+                        $scope.users[$scope.detailIndex].problemGrade = $scope.newGrade;
+
+                    if($scope.newArea != $scope.detailUser.errorArea)
+                        $scope.users[$scope.detailIndex].errorArea = $scope.newArea;
+                    
+                    if($scope.newDescription != $scope.detailUser.description)    
+                        $scope.users[$scope.detailIndex].description = $scope.newDescription;
+                    
+                }else{
+                    $scope.alert.title = "操作失败";
+                }
+                $scope.alert.content = response.data.message;
+                $('#alertModal').modal('show');
+            },
+            function(e) {
+                $scope.alert.title = "操作失败";
+                $scope.alert.content = e.toString();
+                $('#alertModal').modal('show');
+            }
+
+        );
+        
+    };
 }]);

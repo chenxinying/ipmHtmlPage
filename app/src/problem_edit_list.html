@@ -303,20 +303,61 @@
               <hr>
               <div class="row">
                 <div class="col-xs-4">问题阶段：</div>
-                <div class="col-xs-8">{{prjState_str[detailUser.prjState]}}</div>
+                <div class="col-xs-8">
+										<div class="btn-group btn-group-sm">
+												<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+													{{prjState_str[newState]}}<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+													<li><a href="#" ng-click="detailSelectState($index);" ng-if="$index > 0" ng-repeat="prjState in prjState_str">{{prjState}}</a></li>
+												</ul>
+										</div>
+									</div>
               </div>
               <div class="row">
                 <div class="col-xs-4">问题部位：</div>
-                <div class="col-xs-8">{{detailUser.subtype_name}}</div>
+                <div class="col-xs-8">
+										<div class="btn-group btn-group-sm">
+												<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+													{{subtype_str[newTypeId]}}<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+													<li><a href="#" ng-click="detailSelectType($index)" ng-if="$index > 0" ng-repeat="subtype in subtype_str">{{subtype}}</a></li>
+												</ul>
+										</div>
+								</div>
               </div>
               <div class="row">
-                <div class="col-xs-4">问题分级：</div>
-                <div class="col-xs-8">{{detailUser.problemGrade}}</div>
-              </div>
+                <div class="col-xs-4">问题等级：</div>
+                <div class="col-xs-8">
+										<div class="btn-group btn-group-sm">
+												<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+													{{newGrade}}<span class="caret"></span>
+												</button>
+												<ul class="dropdown-menu">
+													<li><a href="#" ng-click="detailSelectGrade($index)" ng-if="$index > 0" ng-repeat="problemGrade in problemGrade_str">{{problemGrade}}</a></li>
+												</ul>
+										</div>
+								</div>
+							</div>
+							<div class="row">
+									<div class="col-xs-4">错误面积：</div>
+									<div class="col-xs-8">
+										<div class="input-group">
+											<input type="text" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" 
+													placeholder="请输入错误面积" aria-describedby="basic-addon1" ng-model="newArea">
+										</div>
+									</div>
+								</div>
               <hr>
                <div class="row">
                 <div class="col-xs-12">问题详情：</div>
-                <div class="col-xs-12"><p>{{detailUser.description}}</p></div>
+                <div class="col-xs-12">
+									<div class="input-group">
+										<input type="text" class="form-control ng-pristine ng-valid ng-not-empty ng-touched" 
+										placeholder="请输入问题详情" aria-describedby="basic-addon1" ng-model="newDescription">
+									</div>
+								</div>
               </div>
               <div class="row">
                 <div class="col-xs-12">图片详情：</div>
@@ -328,7 +369,7 @@
               </div>
             </div>
             <div class="modal-footer">
-							<button type="button" class="btn btn-danger" data-dismiss="modal" data-toggle="modal" href="#deleteModal" ng-click="setDeleteUser(detailIndex, detailUser)">删除</button>
+							<button type="button" class="btn btn-danger" data-dismiss="modal" data-toggle="modal" ng-click="update()">修改问题</button>
               <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>
             </form>
